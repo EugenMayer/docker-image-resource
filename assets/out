@@ -48,7 +48,7 @@ certs_to_file "$ca_certs"
 set_client_certs "$client_certs"
 start_docker "$insecure_registries" "$registry_mirror"
 log_in "$username" "$password" "$registry"
-#multi_login "$credentials"
+multi_login "$credentials"
 
 tag_source=$(jq -r '.source.tag // "latest"' < $payload)
 tag_params=$(jq -r '.params.tag // ""' < $payload)
