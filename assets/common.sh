@@ -102,7 +102,6 @@ multi_login() {
   local credentials="${1}"
   local credentials_count="$(echo $credentials | jq -r '. | length')"
 
-  echo $credentials
   for i in $(seq 0 $(expr "$credentials_count" - 1));
   do
     username="$(echo $credentials | jq -r .[$i].username)"
