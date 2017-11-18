@@ -107,7 +107,7 @@ multi_login() {
   do
     username="$(echo $credentials | jq -r .[$i].username)"
     password="$(echo $credentials | jq -r .[$i].password)"
-    registry="$(echo $credentials | jq -r .[$i].registry // "")"
+    registry="$(echo $credentials | jq -r .[$i]'.registry // ""')"
     docker login -u "${username}" -p "${password}" ${registry}
   done
 }
