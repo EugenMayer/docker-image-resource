@@ -143,7 +143,7 @@ version is the image's digest.
 * `dockerfile`: *Optional.* The path of the `Dockerfile` in the directory if
   it's not at the root of the directory.
 
-* `cache`: *Optional.* Default `false`. When the `build` parameter is set,
+* `cache`: *Optional.* Default `true`. When the `build` parameter is set,
   first pull `image:tag` from the Docker registry (so as to use cached
   intermediate images when building). This will cause the resource to fail
   if it is set to `true` and the image does not exist yet.
@@ -153,6 +153,9 @@ version is the image's digest.
   that's going to be built, this allows picking a different tag like
   `latest` or the previous version. This will cause the resource to fail
   if it is set to a tag that does not exist yet.
+
+* `cache_repository`: *Optional.* If your cache image is not in the same registry as the one to build, set it here.
+   Defaults to the registry of the image you build
 
 * `load_base`: *Optional.* A path to a directory containing an image to `docker
   load` before running `docker build`. The directory must have `image`,

@@ -80,6 +80,8 @@ load_base=$(jq -r '.params.load_base // ""' < $payload)
 build=$(jq -r '.params.build // ""' < $payload)
 cache=$(jq -r '.params.cache // "true"' < $payload)
 cache_tag=$(jq -r ".params.cache_tag // \"${tag_name}\"" < $payload)
+cache_repository=$(jq -r ".params.cache_repository // \"${repository}\"" < $payload)
+
 dockerfile=$(jq -r ".params.dockerfile // \"${build}/Dockerfile\"" < $payload)
 
 load_file=$(jq -r '.params.load_file // ""' < $payload)
@@ -107,8 +109,8 @@ elif [ -n "$build" ]; then
   cache_from=""
   if [ "$cache" = "true" ]; then
     echo "prepulling cache image..."
-    ( docker_pull "${repository}:${cache_tag}" && echo "prepulling cache image..." ) || ( echo "cache image does not exists, continuing.." && true )
-    cache_from="--cache-from ${repository}:${cache_tag}"
+    ( docker_pull "${cache_repository}:${cache_tag}" && echo "prepulling cache image..." ) || ( echo "cache image does not exists, continuing.." && true )
+    cache_from="--cache-from ${cache_repository}:${cache_tag}"
   else
     echo "prepulling cache is disabled"
   fi
