@@ -78,7 +78,7 @@ load=$(jq -r '.params.load // ""' < $payload)
 
 load_base=$(jq -r '.params.load_base // ""' < $payload)
 build=$(jq -r '.params.build // ""' < $payload)
-cache=$(jq -r '.params.cache' < $payload)
+cache=$(jq -r '.params.cache' // "true" < $payload)
 cache_tag=$(jq -r ".params.cache_tag // \"${tag_name}\"" < $payload)
 dockerfile=$(jq -r ".params.dockerfile // \"${build}/Dockerfile\"" < $payload)
 
@@ -87,9 +87,6 @@ load_repository=$(jq -r '.params.load_repository // ""' < $payload)
 load_tag=$(jq -r '.params.load_tag // "latest"' < $payload)
 
 import_file=$(jq -r '.params.import_file // ""' < $payload)
-
-pull_repository=$(jq -r '.params.pull_repository // ""' < $payload)
-pull_tag=$(jq -r '.params.pull_tag // "latest"' < $payload)
 
 if [ -n "$load" ]; then
   docker load -i "${load}/image"
@@ -148,11 +145,8 @@ elif [ -n "$load_file" ]; then
   fi
 elif [ -n "$import_file" ]; then
   cat "$import_file" | docker import - "${repository}:${tag_name}"
-elif [ -n "$pull_repository" ]; then
-  docker pull "${pull_repository}:${pull_tag}"
-  docker tag "${pull_repository}:${pull_tag}" "${repository}:${tag_name}"
 else
-  echo "must specify build, load, load_file, import_file, or pull_repository params"
+  echo "must specify build, load, load_file or import_file params"
   exit 1
 fi
 
