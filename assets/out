@@ -109,8 +109,11 @@ elif [ -n "$build" ]; then
 
   cache_from=""
   if [ "$cache" = "true" ]; then
-    docker_pull "${repository}:${cache_tag}" || true
+    echo "prepulling cache image..."
+    ( docker_pull "${repository}:${cache_tag}" && echo "prepulling cache image..." ) || ( echo "cache image does not exists, continuing.." && true )
     cache_from="--cache-from ${repository}:${cache_tag}"
+  else
+    echo "prepulling cache is disabled"
   fi
 
   expanded_build_args=""
