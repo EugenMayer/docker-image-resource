@@ -145,8 +145,7 @@ version is the image's digest.
 
 * `cache`: *Optional.* Default `true`. When the `build` parameter is set,
   first pull `image:tag` from the Docker registry (so as to use cached
-  intermediate images when building). This will cause the resource to fail
-  if it is set to `true` and the image does not exist yet.
+  intermediate images when building). If no image can be pulled, the **build continues without a cache image**.
 
 * `cache_tag`: *Optional.* Default `tag`. The specific tag to pull before
   building when `cache` parameter is set. Instead of pulling the same tag
