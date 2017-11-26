@@ -1,8 +1,6 @@
-# Docker Image Resource
+# Docker Image Resource NG
 
-Tracks and builds [Docker](https://docker.io) images.
-
-Note: docker registry must be [v2](https://docs.docker.com/registry/spec/api/).
+Concourse resource to pull, build and push [Docker](https://docker.io) images
 
 ## Source Configuration
 
@@ -199,33 +197,68 @@ version is the image's digest.
     { "email": "me@yopmail.com", "how_many_things": 1, "do_thing": false }
     ```            
 
+## resource_type configuration
+
+Since this is a custom resource, you need to register it, so your jobs can use it.
+Place this somewheren in your `pipeline.yml`
+
+```yaml
+resource_types:
+- name:                          docker-image-resource-ng
+  type:                          docker-image
+  privileged:                    true
+  source:
+    repository:                  eugenmayer/concourse-docker-image-resource
+    tag:                         latest
+```
 
 ## Example
 
 ``` yaml
-resources:
-- name: git-resource
-  type: git
-  source: # ...
-
-- name: git-resource-image
-  type: docker-image
-  source:
-    repository: concourse/git-resource
-    username: username
-    password: password
-
-- name: git-resource-rootfs
-  type: s3
-  source: # ...
-
 jobs:
 - name: build-rootfs
   plan:
-  - get: git-resource
-  - put: git-resource-image
-    params: {build: git-resource}
-    get_params: {rootfs: true}
-  - put: git-resource-rootfs
-    params: {file: git-resource-image/rootfs.tar}
+  - get: alpine-base-image
+    # if our base image, so the one we FROM for, has an update, rebuild us
+    trigger: true
+    params:
+      skip_download: true
+  - get: docker-java-image-scm
+    # if the dockerfile changes, trigger a rebuild
+    trigger: true
+    # this will trigger the build and push 
+  - put: docker-java-image
+    params:
+      build: docker-java-image-scm
+
+resources:
+- name: docker-java-image-scm
+  type: git
+  source: 
+    uri: eugenmayer/docker-java-image
+
+- name: alpine-base-image
+  # thats the important one
+  type: docker-image-resource-ng
+  source:
+    repository: alpine
+    tag: edge
+    
+- name: docker-java-image
+  # thats the important one
+  type: docker-image-resource-ng
+  source:
+    repository: eugenmayer/java
+    username: eugenmayer
+    password: secretdockerhubpassword
+    tag: jre8
+
+
+resource_types:    
+- name:                          docker-image-resource-ng
+  type:                          docker-image
+  privileged:                    true
+  source:
+    repository:                  eugenmayer/concourse-docker-image-resource
+    tag:                         latest    
 ```
