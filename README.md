@@ -167,8 +167,10 @@ version is the image's digest.
 
 * `import_file`: *Optional.* A path to a file to `docker import` and then push.
 
-* `tag`: *Optional.* The value should be a path to a file containing the name
+* `tag`: *Optional.* The value should be a **path to a file** containing the name
   of the tag.
+  
+* `tag_static`: *Optional.* use this to set a tag using a usual value be it using *((myvar))* or just a static string
 
 * `tag_prefix`: *Optional.* If specified, the tag read from the file will be
   prepended with this string. This is useful for adding `v` in front of version

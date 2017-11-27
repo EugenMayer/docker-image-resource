@@ -52,6 +52,8 @@ multi_login "$credentials"
 
 tag_source=$(jq -r '.source.tag // "latest"' < $payload)
 tag_params=$(jq -r '.params.tag // ""' < $payload)
+tag_static_params=$(jq -r '.params.tag_static // ""' < $payload)
+
 tag_prefix=$(jq -r '.params.tag_prefix // ""' < $payload)
 need_tag_as_latest=$(jq -r '.params.tag_as_latest // "false"' < $payload)
 build_args=$(jq -r '.params.build_args // []' < $payload)
@@ -59,7 +61,13 @@ build_args_file=$(jq -r '.params.build_args_file // ""' < $payload)
 
 
 tag_name=""
-if [ -n "$tag_params" ]; then
+if ( [ -n "$tag_params" ] && [ -n "$tag_static_params" ] ); then
+    echo "please do not set tag and tag_static at the same time"
+fi
+
+if [ -n "$tag_static_params" ]; then
+  tag_name="${tag_prefix}${$tag_static_params}"
+else if [ -n "$tag_params" ]; then
   if [ ! -f "$tag_params" ]; then
     echo "tag file '$tag_params' does not exist"
     exit 1
