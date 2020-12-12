@@ -54,10 +54,12 @@ start_docker() {
   local registry=""
 
   for registry in $1; do
+    echo "Allowing insecure registries"
     server_args="${server_args} --insecure-registry ${registry}"
   done
 
   if [ -n "$2" ]; then
+    echo "Using registry mirror: $2"
     server_args="${server_args} --registry-mirror=$2"
   fi
 
